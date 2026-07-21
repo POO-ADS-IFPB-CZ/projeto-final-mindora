@@ -1,0 +1,11 @@
+# Pastas de compilação do Maven
+target/
+
+# Configurações do VS Code / IntelliJ IDEA
+.idea/
+*.iml
+.vscode/
+
+# Arquivos temporários do sistema
+.DS_Store
+Thumbs.dbdesktop.ini
