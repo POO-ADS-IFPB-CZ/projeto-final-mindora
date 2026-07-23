@@ -8,7 +8,8 @@ target/
 
 # Arquivos temporários do sistema
 .DS_Store
-Thumbs.dbdesktop.ini
+Thumbs.db
+desktop.ini
 
 # Credenciais do banco local (desenvolvimento)
 src/main/resources/db.properties
