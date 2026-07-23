@@ -9,3 +9,6 @@ target/
 # Arquivos temporários do sistema
 .DS_Store
 Thumbs.dbdesktop.ini
+
+# Credenciais do banco local (desenvolvimento)
+src/main/resources/db.properties
