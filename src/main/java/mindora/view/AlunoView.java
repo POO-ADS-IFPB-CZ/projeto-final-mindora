@@ -43,15 +43,27 @@ public class AlunoView extends VBox {
         grid.add(new Label("Observação:"), 0, 2);
         grid.add(txtObservacao, 1, 2);
         grid.add(new Label("Responsável:"), 0, 3);
-        grid.add(cbResponsavel, 1, 3);
+
+        // Botão de atualização rápida ao lado do ComboBox
+        Button btnRecarregarResp = new Button("🔄");
+        btnRecarregarResp.setTooltip(new Tooltip("Recarregar lista de responsáveis do banco de dados"));
+        btnRecarregarResp.setOnAction(e -> carregarResponsaveis());
+
+        HBox boxResponsavel = new HBox(5, cbResponsavel, btnRecarregarResp);
+        grid.add(boxResponsavel, 1, 3);
 
         cbResponsavel.setPrefWidth(220);
 
+        // 🔄 Atualização automática do ComboBox ao abrir a lista suspensa
+        cbResponsavel.setOnShowing(e -> carregarResponsaveis());
+
+        // Botões de Ação Principais
         Button btnSalvar = new Button("Salvar");
         Button btnExcluir = new Button("Excluir");
         Button btnLimpar = new Button("Limpar");
+        Button btnAtualizarTudo = new Button("🔄 Atualizar Dados");
 
-        HBox boxBotoes = new HBox(10, btnSalvar, btnExcluir, btnLimpar);
+        HBox boxBotoes = new HBox(10, btnSalvar, btnExcluir, btnLimpar, btnAtualizarTudo);
 
         TableColumn<Aluno, Long> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -76,6 +88,7 @@ public class AlunoView extends VBox {
         btnSalvar.setOnAction(e -> salvar());
         btnExcluir.setOnAction(e -> excluir());
         btnLimpar.setOnAction(e -> limparCampos());
+        btnAtualizarTudo.setOnAction(e -> recarregarTudo());
 
         tabela.getSelectionModel().selectedItemProperty().addListener((obs, antigo, novo) -> {
             if (novo != null) {
@@ -83,6 +96,9 @@ public class AlunoView extends VBox {
                 txtNome.setText(novo.getNome());
                 dpDataNascimento.setValue(novo.getDataNascimento());
                 txtObservacao.setText(novo.getObservacao() != null ? novo.getObservacao() : "");
+
+                // Recarrega responsáveis atualizados do banco ao selecionar um aluno
+                carregarResponsaveis();
 
                 if (novo.getResponsavelId() != null) {
                     for (Responsavel r : cbResponsavel.getItems()) {
@@ -101,9 +117,25 @@ public class AlunoView extends VBox {
         carregarDados();
     }
 
+    public void recarregarTudo() {
+        carregarResponsaveis();
+        carregarDados();
+    }
+
     public void carregarResponsaveis() {
         try {
+            Responsavel selecionadoAtual = cbResponsavel.getValue();
             cbResponsavel.setItems(FXCollections.observableArrayList(responsavelDAO.listarTodos()));
+
+            // Re-seleciona o responsável anterior se ele ainda existir na lista
+            if (selecionadoAtual != null) {
+                for (Responsavel r : cbResponsavel.getItems()) {
+                    if (r.getId().equals(selecionadoAtual.getId())) {
+                        cbResponsavel.setValue(r);
+                        break;
+                    }
+                }
+            }
         } catch (SQLException e) {
             mostrarAlerta("Erro", "Erro ao carregar lista de responsáveis: " + e.getMessage());
         }
@@ -137,7 +169,7 @@ public class AlunoView extends VBox {
                 alunoDAO.atualizar(alunoSelecionado, respId);
             }
             limparCampos();
-            carregarDados();
+            recarregarTudo();
         } catch (SQLException e) {
             mostrarAlerta("Erro", "Erro ao salvar aluno: " + e.getMessage());
         }
@@ -148,7 +180,7 @@ public class AlunoView extends VBox {
             try {
                 alunoDAO.deletar(alunoSelecionado.getId());
                 limparCampos();
-                carregarDados();
+                recarregarTudo();
             } catch (SQLException e) {
                 mostrarAlerta("Erro", "Erro ao excluir aluno: " + e.getMessage());
             }
