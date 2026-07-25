@@ -7,6 +7,7 @@ import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import mindora.view.AlunoView;
 import mindora.view.ProfissionalView;
+import mindora.view.ResponsavelView;
 import javafx.scene.image.Image;
 import java.io.InputStream;
 
@@ -24,7 +25,11 @@ public class Main extends Application {
         Tab tabProfissionais = new Tab("Profissionais", new ProfissionalView());
         tabProfissionais.setClosable(false);
 
-        tabPane.getTabs().addAll(tabAlunos, tabProfissionais);
+        // Aba 3: Responsáveis
+        Tab tabResponsaveis = new Tab("Responsáveis", new ResponsavelView());
+        tabResponsaveis.setClosable(false);
+
+        tabPane.getTabs().addAll(tabAlunos, tabProfissionais, tabResponsaveis);
 
         Scene scene = new Scene(tabPane, 850, 600);
 
