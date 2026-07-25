@@ -3,25 +3,19 @@ package mindora.model;
 public class Responsavel {
     private Long id;
     private String nome;
-    private String cpf;
-    private String telefone;
     private String email;
 
     public Responsavel() {
     }
 
-    public Responsavel(String nome, String cpf, String telefone, String email) {
+    public Responsavel(String nome, String email) {
         this.nome = nome;
-        this.cpf = cpf;
-        this.telefone = telefone;
         this.email = email;
     }
 
-    public Responsavel(Long id, String nome, String cpf, String telefone, String email) {
+    public Responsavel(Long id, String nome, String email) {
         this.id = id;
         this.nome = nome;
-        this.cpf = cpf;
-        this.telefone = telefone;
         this.email = email;
     }
 
@@ -39,22 +33,6 @@ public class Responsavel {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
     }
 
     public String getEmail() {

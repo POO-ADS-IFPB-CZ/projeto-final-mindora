@@ -10,13 +10,11 @@ import java.util.List;
 public class ResponsavelDAO {
 
     public void salvar(Responsavel responsavel) throws SQLException {
-        String sql = "INSERT INTO responsavel (nome, cpf, telefone, email) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO responsavel (nome, email) VALUES (?, ?)";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, responsavel.getNome());
-            stmt.setString(2, responsavel.getCpf());
-            stmt.setString(3, responsavel.getTelefone());
-            stmt.setString(4, responsavel.getEmail());
+            stmt.setString(2, responsavel.getEmail());
             stmt.executeUpdate();
         }
     }
@@ -31,8 +29,6 @@ public class ResponsavelDAO {
                 Responsavel r = new Responsavel(
                         rs.getLong("id"),
                         rs.getString("nome"),
-                        rs.getString("cpf"),
-                        rs.getString("telefone"),
                         rs.getString("email")
                 );
                 lista.add(r);
@@ -42,14 +38,12 @@ public class ResponsavelDAO {
     }
 
     public void atualizar(Responsavel responsavel) throws SQLException {
-        String sql = "UPDATE responsavel SET nome = ?, cpf = ?, telefone = ?, email = ? WHERE id = ?";
+        String sql = "UPDATE responsavel SET nome = ?, email = ? WHERE id = ?";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, responsavel.getNome());
-            stmt.setString(2, responsavel.getCpf());
-            stmt.setString(3, responsavel.getTelefone());
-            stmt.setString(4, responsavel.getEmail());
-            stmt.setLong(5, responsavel.getId());
+            stmt.setString(2, responsavel.getEmail());
+            stmt.setLong(3, responsavel.getId());
             stmt.executeUpdate();
         }
     }
