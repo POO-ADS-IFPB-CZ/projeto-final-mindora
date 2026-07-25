@@ -1,5 +1,5 @@
 
--- 1) ALUNO --------------------------------------------------------
+-- 1) ALUNO
 CREATE TABLE aluno (
     id          SERIAL          PRIMARY KEY,
     nome        VARCHAR(120)    NOT NULL,
@@ -8,14 +8,14 @@ CREATE TABLE aluno (
     observacao  TEXT
 );
 
--- 2) RESPONSAVEL --------------------------------------------------
+-- 2) RESPONSAVEL
 CREATE TABLE responsavel (
     id    SERIAL       PRIMARY KEY,
     nome  VARCHAR(120) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE
 );
 
--- 3) ALUNO x RESPONSAVEL (N:N) ------------------------------------
+-- 3) ALUNO x RESPONSAVEL (N:N)
 CREATE TABLE aluno_responsavel (
     aluno_id        INTEGER NOT NULL,
     responsavel_id  INTEGER NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE aluno_responsavel (
         FOREIGN KEY (responsavel_id)  REFERENCES responsavel (id) ON DELETE CASCADE
 );
 
--- 4) RESPONSAVEL_TELEFONE (atributo multivalorado) ---------------
+-- 4) RESPONSAVEL_TELEFONE (atributo multivalorado)
 CREATE TABLE responsavel_telefone (
     id              SERIAL       PRIMARY KEY,
     responsavel_id  INTEGER      NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE responsavel_telefone (
         FOREIGN KEY (responsavel_id) REFERENCES responsavel (id) ON DELETE CASCADE
 );
 
--- 5) PROFISSIONAL -------------------------------------------------
+-- 5) PROFISSIONAL
 CREATE TABLE profissional (
     id            SERIAL       PRIMARY KEY,
     nome          VARCHAR(120) NOT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE sessao (
         FOREIGN KEY (profissional_id) REFERENCES profissional (id) ON DELETE RESTRICT
 );
 
--- 8) SESSAO x ATIVIDADE (N:N) ------------------------------------
+-- 8) SESSAO x ATIVIDADE (N:N) 
 -- Como toda sessão precisa ter pelo menos 1 atividade (Sessão 1,N),
 -- a regra de "no mínimo 1" será garantida pela aplicação
 -- (ou por trigger, se desejado) — não há CHECK que cubra N:N no Postgres.
