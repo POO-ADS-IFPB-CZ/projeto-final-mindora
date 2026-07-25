@@ -1,8 +1,3 @@
--- ============================================================
--- Mindora — Checkpoint 2: Criação das tabelas (esquema lógico)
--- SGBD: PostgreSQL
--- Conectar antes: \c mindora
--- ============================================================
 
 -- 1) ALUNO --------------------------------------------------------
 CREATE TABLE aluno (
@@ -48,7 +43,7 @@ CREATE TABLE profissional (
     registro      VARCHAR(50)  NOT NULL UNIQUE
 );
 
--- 6) ATIVIDADE ----------------------------------------------------
+-- 6) ATIVIDADE
 CREATE TABLE atividade (
     id         SERIAL        PRIMARY KEY,
     titulo     VARCHAR(120)  NOT NULL,
@@ -59,7 +54,7 @@ CREATE TABLE atividade (
         CHECK (nivel IN ('basico', 'intermediario', 'avancado'))
 );
 
--- 7) SESSAO (sem FK para atividade — é N:N) ----------------------
+-- 7) SESSAO (sem FK para atividade — é N:N)
 CREATE TABLE sessao (
     id              SERIAL         PRIMARY KEY,
     data            DATE           NOT NULL,
@@ -93,7 +88,3 @@ CREATE TABLE sessao_atividade (
         FOREIGN KEY (atividade_id) REFERENCES atividade (id) ON DELETE CASCADE
 );
 
--- ============================================================
--- Fim do esquema lógico. Próximo passo: 03_inserts_exemplo.sql
--- (opcional, para popular o banco com dados de teste).
--- ============================================================

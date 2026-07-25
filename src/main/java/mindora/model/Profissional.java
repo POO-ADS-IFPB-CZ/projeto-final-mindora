@@ -5,7 +5,7 @@ public class Profissional {
     private String nome;
     private String especialidade;
     private String registro;
-    
+
     public Profissional() {
     }
 
