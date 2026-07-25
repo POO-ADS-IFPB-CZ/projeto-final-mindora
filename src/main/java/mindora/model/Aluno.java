@@ -6,21 +6,24 @@ public class Aluno {
     private Long id;
     private String nome;
     private LocalDate dataNascimento;
+    private String observacao;
     private Long responsavelId;
     private String responsavelNome;
 
     public Aluno() {
     }
 
-    public Aluno(String nome, LocalDate dataNascimento) {
+    public Aluno(String nome, LocalDate dataNascimento, String observacao) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
+        this.observacao = observacao;
     }
 
-    public Aluno(Long id, String nome, LocalDate dataNascimento, Long responsavelId, String responsavelNome) {
+    public Aluno(Long id, String nome, LocalDate dataNascimento, String observacao, Long responsavelId, String responsavelNome) {
         this.id = id;
         this.nome = nome;
         this.dataNascimento = dataNascimento;
+        this.observacao = observacao;
         this.responsavelId = responsavelId;
         this.responsavelNome = responsavelNome;
     }
@@ -47,6 +50,14 @@ public class Aluno {
 
     public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
     }
 
     public Long getResponsavelId() {

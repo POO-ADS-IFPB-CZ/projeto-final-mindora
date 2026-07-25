@@ -18,6 +18,7 @@ public class AlunoView extends VBox {
 
     private TextField txtNome = new TextField();
     private DatePicker dpDataNascimento = new DatePicker();
+    private TextField txtObservacao = new TextField();
     private ComboBox<Responsavel> cbResponsavel = new ComboBox<>();
 
     private TableView<Aluno> tabela = new TableView<>();
@@ -39,8 +40,10 @@ public class AlunoView extends VBox {
         grid.add(txtNome, 1, 0);
         grid.add(new Label("Data Nascimento:"), 0, 1);
         grid.add(dpDataNascimento, 1, 1);
-        grid.add(new Label("Responsável:"), 0, 2);
-        grid.add(cbResponsavel, 1, 2);
+        grid.add(new Label("Observação:"), 0, 2);
+        grid.add(txtObservacao, 1, 2);
+        grid.add(new Label("Responsável:"), 0, 3);
+        grid.add(cbResponsavel, 1, 3);
 
         cbResponsavel.setPrefWidth(220);
 
@@ -59,10 +62,13 @@ public class AlunoView extends VBox {
         TableColumn<Aluno, LocalDate> colData = new TableColumn<>("Data Nascimento");
         colData.setCellValueFactory(new PropertyValueFactory<>("dataNascimento"));
 
+        TableColumn<Aluno, String> colObs = new TableColumn<>("Observação");
+        colObs.setCellValueFactory(new PropertyValueFactory<>("observacao"));
+
         TableColumn<Aluno, String> colResp = new TableColumn<>("Responsável");
         colResp.setCellValueFactory(new PropertyValueFactory<>("responsavelNome"));
 
-        tabela.getColumns().addAll(colId, colNome, colData, colResp);
+        tabela.getColumns().addAll(colId, colNome, colData, colObs, colResp);
         tabela.setItems(listaAlunos);
 
         getChildren().addAll(new Label("🎓 Gestão de Alunos"), grid, boxBotoes, tabela);
@@ -76,8 +82,8 @@ public class AlunoView extends VBox {
                 alunoSelecionado = novo;
                 txtNome.setText(novo.getNome());
                 dpDataNascimento.setValue(novo.getDataNascimento());
+                txtObservacao.setText(novo.getObservacao() != null ? novo.getObservacao() : "");
 
-                // Seleciona no ComboBox o responsável atual do aluno
                 if (novo.getResponsavelId() != null) {
                     for (Responsavel r : cbResponsavel.getItems()) {
                         if (r.getId().equals(novo.getResponsavelId())) {
@@ -122,11 +128,12 @@ public class AlunoView extends VBox {
 
         try {
             if (alunoSelecionado == null) {
-                Aluno novo = new Aluno(txtNome.getText(), dpDataNascimento.getValue());
+                Aluno novo = new Aluno(txtNome.getText(), dpDataNascimento.getValue(), txtObservacao.getText());
                 alunoDAO.salvar(novo, respId);
             } else {
                 alunoSelecionado.setNome(txtNome.getText());
                 alunoSelecionado.setDataNascimento(dpDataNascimento.getValue());
+                alunoSelecionado.setObservacao(txtObservacao.getText());
                 alunoDAO.atualizar(alunoSelecionado, respId);
             }
             limparCampos();
@@ -152,6 +159,7 @@ public class AlunoView extends VBox {
         alunoSelecionado = null;
         txtNome.clear();
         dpDataNascimento.setValue(null);
+        txtObservacao.clear();
         cbResponsavel.setValue(null);
         tabela.getSelectionModel().clearSelection();
     }
