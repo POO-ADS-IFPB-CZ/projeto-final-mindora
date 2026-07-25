@@ -15,6 +15,7 @@ public class ResponsavelView extends VBox {
 
     private TextField txtNome = new TextField();
     private TextField txtEmail = new TextField();
+    private TextField txtTelefone = new TextField();
 
     private TableView<Responsavel> tabela = new TableView<>();
     private ObservableList<Responsavel> listaResponsaveis = FXCollections.observableArrayList();
@@ -33,6 +34,8 @@ public class ResponsavelView extends VBox {
         grid.add(txtNome, 1, 0);
         grid.add(new Label("E-mail:"), 0, 1);
         grid.add(txtEmail, 1, 1);
+        grid.add(new Label("Telefone:"), 0, 2);
+        grid.add(txtTelefone, 1, 2);
 
         Button btnSalvar = new Button("Salvar");
         Button btnExcluir = new Button("Excluir");
@@ -49,7 +52,10 @@ public class ResponsavelView extends VBox {
         TableColumn<Responsavel, String> colEmail = new TableColumn<>("E-mail");
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        tabela.getColumns().addAll(colId, colNome, colEmail);
+        TableColumn<Responsavel, String> colTel = new TableColumn<>("Telefone");
+        colTel.setCellValueFactory(new PropertyValueFactory<>("telefone"));
+
+        tabela.getColumns().addAll(colId, colNome, colEmail, colTel);
         tabela.setItems(listaResponsaveis);
 
         getChildren().addAll(new Label("👨‍👩‍👧 Gestão de Responsáveis"), grid, boxBotoes, tabela);
@@ -63,6 +69,7 @@ public class ResponsavelView extends VBox {
                 responsavelSelecionado = novo;
                 txtNome.setText(novo.getNome());
                 txtEmail.setText(novo.getEmail());
+                txtTelefone.setText(novo.getTelefone() != null ? novo.getTelefone() : "");
             }
         });
 
@@ -85,11 +92,12 @@ public class ResponsavelView extends VBox {
 
         try {
             if (responsavelSelecionado == null) {
-                Responsavel novo = new Responsavel(txtNome.getText(), txtEmail.getText());
+                Responsavel novo = new Responsavel(txtNome.getText(), txtEmail.getText(), txtTelefone.getText());
                 responsavelDAO.salvar(novo);
             } else {
                 responsavelSelecionado.setNome(txtNome.getText());
                 responsavelSelecionado.setEmail(txtEmail.getText());
+                responsavelSelecionado.setTelefone(txtTelefone.getText());
                 responsavelDAO.atualizar(responsavelSelecionado);
             }
             limparCampos();
@@ -115,6 +123,7 @@ public class ResponsavelView extends VBox {
         responsavelSelecionado = null;
         txtNome.clear();
         txtEmail.clear();
+        txtTelefone.clear();
         tabela.getSelectionModel().clearSelection();
     }
 
