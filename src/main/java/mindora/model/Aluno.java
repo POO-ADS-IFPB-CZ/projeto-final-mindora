@@ -5,42 +5,68 @@ import java.time.LocalDate;
 public class Aluno {
     private Long id;
     private String nome;
-    private LocalDate dataNasc;
-    //Nivel de supervisão do aluno TEA
-    private String nivelSup;
-    private String observacao;
+    private LocalDate dataNascimento;
+    private Long responsavelId;
+    private String responsavelNome;
 
-    public Aluno() {}
-
-    // Construtor para novos cadastros (sem ID, pois o banco gera com SERIAL)
-    public Aluno(String nome, LocalDate dataNasc, String nivelSup, String observacao) {
-        this.nome = nome;
-        this.dataNasc = dataNasc;
-        this.nivelSup = nivelSup;
-        this.observacao = observacao;
+    public Aluno() {
     }
 
-    // Construtor completo com ID (para consultas e atualizações no banco)
-    public Aluno(Long id, String nome, LocalDate dataNasc, String nivelSup, String observacao) {
+    public Aluno(String nome, LocalDate dataNascimento) {
+        this.nome = nome;
+        this.dataNascimento = dataNascimento;
+    }
+
+    public Aluno(Long id, String nome, LocalDate dataNascimento, Long responsavelId, String responsavelNome) {
         this.id = id;
         this.nome = nome;
-        this.dataNasc = dataNasc;
-        this.nivelSup = nivelSup;
-        this.observacao = observacao;
+        this.dataNascimento = dataNascimento;
+        this.responsavelId = responsavelId;
+        this.responsavelNome = responsavelNome;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public LocalDate getDataNasc() { return dataNasc; }
-    public void setDataNasc(LocalDate dataNasc) { this.dataNasc = dataNasc; }
+    public String getNome() {
+        return nome;
+    }
 
-    public String getNivelSup() { return nivelSup; }
-    public void setNivelSup(String nivelSup) { this.nivelSup = nivelSup; }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-    public String getObservacao() { return observacao; }
-    public void setObservacao(String observacao) { this.observacao = observacao; }
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(LocalDate dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public Long getResponsavelId() {
+        return responsavelId;
+    }
+
+    public void setResponsavelId(Long responsavelId) {
+        this.responsavelId = responsavelId;
+    }
+
+    public String getResponsavelNome() {
+        return responsavelNome;
+    }
+
+    public void setResponsavelNome(String responsavelNome) {
+        this.responsavelNome = responsavelNome;
+    }
+
+    @Override
+    public String toString() {
+        return nome;
+    }
 }

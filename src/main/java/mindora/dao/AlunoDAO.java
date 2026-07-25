@@ -4,77 +4,109 @@ import mindora.config.ConnectionFactory;
 import mindora.model.Aluno;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AlunoDAO {
 
-    // 1. CREATE - Salvar um novo aluno na base de dados
-    public void salvar(Aluno aluno) throws SQLException {
-        String sql = "INSERT INTO aluno (nome, data_nasc, nivel_sup, observacao) VALUES (?, ?, ?, ?)";
+    public void salvar(Aluno aluno, Long responsavelId) throws SQLException {
+        String sqlAluno = "INSERT INTO aluno (nome, data_nascimento) VALUES (?, ?) RETURNING id";
+        String sqlRelacao = "INSERT INTO aluno_responsavel (aluno_id, responsavel_id) VALUES (?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmtAluno = conn.prepareStatement(sqlAluno)) {
 
-            stmt.setString(1, aluno.getNome());
-            stmt.setDate(2, aluno.getDataNasc() != null ? Date.valueOf(aluno.getDataNasc()) : null);
-            stmt.setString(3, aluno.getNivelSup());
-            stmt.setString(4, aluno.getObservacao());
+            stmtAluno.setString(1, aluno.getNome());
+            stmtAluno.setDate(2, Date.valueOf(aluno.getDataNascimento()));
+            ResultSet rs = stmtAluno.executeQuery();
 
-            stmt.executeUpdate();
+            if (rs.next()) {
+                long alunoIdGerado = rs.getLong(1);
+                aluno.setId(alunoIdGerado);
+
+                // Grava o vinculo na tabela relacional aluno_responsavel se um responsavel foi selecionado
+                if (responsavelId != null) {
+                    try (PreparedStatement stmtRel = conn.prepareStatement(sqlRelacao)) {
+                        stmtRel.setLong(1, alunoIdGerado);
+                        stmtRel.setLong(2, responsavelId);
+                        stmtRel.executeUpdate();
+                    }
+                }
+            }
         }
     }
 
-    // 2. READ - Listar todos os alunos cadastrados
     public List<Aluno> listarTodos() throws SQLException {
-        List<Aluno> alunos = new ArrayList<>();
-        String sql = "SELECT * FROM aluno ORDER BY id";
+        List<Aluno> lista = new ArrayList<>();
+        // Busca alunos e o nome do seu responsável usando a tabela relacional aluno_responsavel
+        String sql = "SELECT a.id, a.nome, a.data_nascimento, r.id AS resp_id, r.nome AS resp_nome " +
+                "FROM aluno a " +
+                "LEFT JOIN aluno_responsavel ar ON a.id = ar.aluno_id " +
+                "LEFT JOIN responsavel r ON ar.responsavel_id = r.id " +
+                "ORDER BY a.id";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Long id = rs.getLong("id");
-                String nome = rs.getString("nome");
-                Date dateVal = rs.getDate("data_nasc");
-                LocalDate dataNasc = dateVal != null ? dateVal.toLocalDate() : null;
-                String nivelSup = rs.getString("nivel_sup");
-                String observacao = rs.getString("observacao");
-
-                alunos.add(new Aluno(id, nome, dataNasc, nivelSup, observacao));
+                Date dataSql = rs.getDate("data_nascimento");
+                Aluno a = new Aluno(
+                        rs.getLong("id"),
+                        rs.getString("nome"),
+                        dataSql != null ? dataSql.toLocalDate() : null,
+                        rs.getObject("resp_id") != null ? rs.getLong("resp_id") : null,
+                        rs.getString("resp_nome")
+                );
+                lista.add(a);
             }
         }
-        return alunos;
+        return lista;
     }
 
-    // 3. UPDATE - Atualizar dados de um aluno existente
-    public void atualizar(Aluno aluno) throws SQLException {
-        String sql = "UPDATE aluno SET nome = ?, data_nasc = ?, nivel_sup = ?, observacao = ? WHERE id = ?";
+    public void atualizar(Aluno aluno, Long responsavelId) throws SQLException {
+        String sqlAluno = "UPDATE aluno SET nome = ?, data_nascimento = ? WHERE id = ?";
+        String sqlDelRel = "DELETE FROM aluno_responsavel WHERE aluno_id = ?";
+        String sqlInsRel = "INSERT INTO aluno_responsavel (aluno_id, responsavel_id) VALUES (?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmtAluno = conn.prepareStatement(sqlAluno)) {
 
-            stmt.setString(1, aluno.getNome());
-            stmt.setDate(2, aluno.getDataNasc() != null ? Date.valueOf(aluno.getDataNasc()) : null);
-            stmt.setString(3, aluno.getNivelSup());
-            stmt.setString(4, aluno.getObservacao());
-            stmt.setLong(5, aluno.getId());
+            stmtAluno.setString(1, aluno.getNome());
+            stmtAluno.setDate(2, Date.valueOf(aluno.getDataNascimento()));
+            stmtAluno.setLong(3, aluno.getId());
+            stmtAluno.executeUpdate();
 
-            stmt.executeUpdate();
+            // Atualiza o vínculo na tabela relacional
+            try (PreparedStatement stmtDel = conn.prepareStatement(sqlDelRel)) {
+                stmtDel.setLong(1, aluno.getId());
+                stmtDel.executeUpdate();
+            }
+
+            if (responsavelId != null) {
+                try (PreparedStatement stmtIns = conn.prepareStatement(sqlInsRel)) {
+                    stmtIns.setLong(1, aluno.getId());
+                    stmtIns.setLong(2, responsavelId);
+                    stmtIns.executeUpdate();
+                }
+            }
         }
     }
 
-    // 4. DELETE - Remover um aluno pelo ID
     public void deletar(Long id) throws SQLException {
-        String sql = "DELETE FROM aluno WHERE id = ?";
+        String sqlRel = "DELETE FROM aluno_responsavel WHERE aluno_id = ?";
+        String sqlAluno = "DELETE FROM aluno WHERE id = ?";
 
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            try (PreparedStatement stmtRel = conn.prepareStatement(sqlRel)) {
+                stmtRel.setLong(1, id);
+                stmtRel.executeUpdate();
+            }
 
-            stmt.setLong(1, id);
-            stmt.executeUpdate();
+            try (PreparedStatement stmtAluno = conn.prepareStatement(sqlAluno)) {
+                stmtAluno.setLong(1, id);
+                stmtAluno.executeUpdate();
+            }
         }
     }
 }

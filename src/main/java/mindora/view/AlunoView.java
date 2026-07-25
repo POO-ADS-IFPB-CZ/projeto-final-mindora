@@ -7,24 +7,24 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import mindora.dao.AlunoDAO;
+import mindora.dao.ResponsavelDAO;
 import mindora.model.Aluno;
+import mindora.model.Responsavel;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class AlunoView extends VBox {
 
-    // Componentes do Formulário
     private TextField txtNome = new TextField();
-    private DatePicker dpDataNasc = new DatePicker();
-    // Nível de suporte do aluno.
-    private TextField txtNivelSup = new TextField();
-    private TextField txtObservacao = new TextField();
+    private DatePicker dpDataNascimento = new DatePicker();
+    private ComboBox<Responsavel> cbResponsavel = new ComboBox<>();
 
-    // Tabela e Dados
     private TableView<Aluno> tabela = new TableView<>();
     private ObservableList<Aluno> listaAlunos = FXCollections.observableArrayList();
+
     private AlunoDAO alunoDAO = new AlunoDAO();
+    private ResponsavelDAO responsavelDAO = new ResponsavelDAO();
     private Aluno alunoSelecionado = null;
 
     public AlunoView() {
@@ -37,12 +37,12 @@ public class AlunoView extends VBox {
 
         grid.add(new Label("Nome:"), 0, 0);
         grid.add(txtNome, 1, 0);
-        grid.add(new Label("Data de Nascimento:"), 0, 1);
-        grid.add(dpDataNasc, 1, 1);
-        grid.add(new Label("Nível de Suporte:"), 0, 2);
-        grid.add(txtNivelSup, 1, 2);
-        grid.add(new Label("Observação:"), 0, 3);
-        grid.add(txtObservacao, 1, 3);
+        grid.add(new Label("Data Nascimento:"), 0, 1);
+        grid.add(dpDataNascimento, 1, 1);
+        grid.add(new Label("Responsável:"), 0, 2);
+        grid.add(cbResponsavel, 1, 2);
+
+        cbResponsavel.setPrefWidth(220);
 
         Button btnSalvar = new Button("Salvar");
         Button btnExcluir = new Button("Excluir");
@@ -50,28 +50,22 @@ public class AlunoView extends VBox {
 
         HBox boxBotoes = new HBox(10, btnSalvar, btnExcluir, btnLimpar);
 
-        // Configuração das Colunas da Tabela
         TableColumn<Aluno, Long> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
 
         TableColumn<Aluno, String> colNome = new TableColumn<>("Nome");
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
 
-        TableColumn<Aluno, LocalDate> colData = new TableColumn<>("Data Nasc.");
-        colData.setCellValueFactory(new PropertyValueFactory<>("dataNasc"));
+        TableColumn<Aluno, LocalDate> colData = new TableColumn<>("Data Nascimento");
+        colData.setCellValueFactory(new PropertyValueFactory<>("dataNascimento"));
 
-        TableColumn<Aluno, String> colNivel = new TableColumn<>("Nível de Suporte");
-        colNivel.setCellValueFactory(new PropertyValueFactory<>("nivelSup"));
+        TableColumn<Aluno, String> colResp = new TableColumn<>("Responsável");
+        colResp.setCellValueFactory(new PropertyValueFactory<>("responsavelNome"));
 
-        TableColumn<Aluno, String> colObs = new TableColumn<>("Observação");
-        colObs.setCellValueFactory(new PropertyValueFactory<>("observacao"));
-
-        tabela.getColumns().addAll(colId, colNome, colData, colNivel, colObs);
+        tabela.getColumns().addAll(colId, colNome, colData, colResp);
         tabela.setItems(listaAlunos);
 
-        // Adiciona tudo ao VBox principal
-        getChildren().addAll(new Label("📋 Gestão de Alunos"), grid, boxBotoes, tabela);
-
+        getChildren().addAll(new Label("🎓 Gestão de Alunos"), grid, boxBotoes, tabela);
 
         btnSalvar.setOnAction(e -> salvar());
         btnExcluir.setOnAction(e -> excluir());
@@ -81,13 +75,32 @@ public class AlunoView extends VBox {
             if (novo != null) {
                 alunoSelecionado = novo;
                 txtNome.setText(novo.getNome());
-                dpDataNasc.setValue(novo.getDataNasc());
-                txtNivelSup.setText(novo.getNivelSup());
-                txtObservacao.setText(novo.getObservacao());
+                dpDataNascimento.setValue(novo.getDataNascimento());
+
+                // Seleciona no ComboBox o responsável atual do aluno
+                if (novo.getResponsavelId() != null) {
+                    for (Responsavel r : cbResponsavel.getItems()) {
+                        if (r.getId().equals(novo.getResponsavelId())) {
+                            cbResponsavel.setValue(r);
+                            break;
+                        }
+                    }
+                } else {
+                    cbResponsavel.setValue(null);
+                }
             }
         });
 
+        carregarResponsaveis();
         carregarDados();
+    }
+
+    public void carregarResponsaveis() {
+        try {
+            cbResponsavel.setItems(FXCollections.observableArrayList(responsavelDAO.listarTodos()));
+        } catch (SQLException e) {
+            mostrarAlerta("Erro", "Erro ao carregar lista de responsáveis: " + e.getMessage());
+        }
     }
 
     private void carregarDados() {
@@ -99,23 +112,22 @@ public class AlunoView extends VBox {
     }
 
     private void salvar() {
-        if (txtNome.getText().isEmpty() || dpDataNasc.getValue() == null) {
+        if (txtNome.getText().isEmpty() || dpDataNascimento.getValue() == null) {
             mostrarAlerta("Aviso", "Preencha o Nome e a Data de Nascimento.");
             return;
         }
 
+        Responsavel respSelecionado = cbResponsavel.getValue();
+        Long respId = respSelecionado != null ? respSelecionado.getId() : null;
+
         try {
             if (alunoSelecionado == null) {
-                // Inserir Novo Aluno
-                Aluno novo = new Aluno(txtNome.getText(), dpDataNasc.getValue(), txtNivelSup.getText(), txtObservacao.getText());
-                alunoDAO.salvar(novo);
+                Aluno novo = new Aluno(txtNome.getText(), dpDataNascimento.getValue());
+                alunoDAO.salvar(novo, respId);
             } else {
-                // Atualizar Existente
                 alunoSelecionado.setNome(txtNome.getText());
-                alunoSelecionado.setDataNasc(dpDataNasc.getValue());
-                alunoSelecionado.setNivelSup(txtNivelSup.getText());
-                alunoSelecionado.setObservacao(txtObservacao.getText());
-                alunoDAO.atualizar(alunoSelecionado);
+                alunoSelecionado.setDataNascimento(dpDataNascimento.getValue());
+                alunoDAO.atualizar(alunoSelecionado, respId);
             }
             limparCampos();
             carregarDados();
@@ -139,9 +151,8 @@ public class AlunoView extends VBox {
     private void limparCampos() {
         alunoSelecionado = null;
         txtNome.clear();
-        dpDataNasc.setValue(null);
-        txtNivelSup.clear();
-        txtObservacao.clear();
+        dpDataNascimento.setValue(null);
+        cbResponsavel.setValue(null);
         tabela.getSelectionModel().clearSelection();
     }
 
