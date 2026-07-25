@@ -7,6 +7,8 @@ import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import mindora.view.AlunoView;
 import mindora.view.ProfissionalView;
+import javafx.scene.image.Image;
+import java.io.InputStream;
 
 public class Main extends Application {
 
@@ -25,6 +27,14 @@ public class Main extends Application {
         tabPane.getTabs().addAll(tabAlunos, tabProfissionais);
 
         Scene scene = new Scene(tabPane, 850, 600);
+
+        InputStream iconStream = getClass().getResourceAsStream("/images/LogoMindora64px.jpg");
+        if (iconStream != null) {
+            primaryStage.getIcons().add(new Image(iconStream));
+        } else {
+            System.out.println("Aviso: Logo não encontrado em /images/LogoMindora64px.jpg");
+        }
+
         primaryStage.setTitle("Mindora - Sistema de Gestão");
         primaryStage.setScene(scene);
         primaryStage.show();
