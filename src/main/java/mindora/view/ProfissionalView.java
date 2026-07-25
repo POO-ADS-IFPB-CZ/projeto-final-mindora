@@ -37,7 +37,7 @@ public class ProfissionalView extends VBox {
         grid.add(txtNome, 1, 0);
         grid.add(new Label("Especialidade:"), 0, 1);
         grid.add(txtEspecialidade, 1, 1);
-        grid.add(new Label("Registro Profissional:"), 0, 2);
+        grid.add(new Label("N° Registro Profissional/ Documento:"),0, 2);
         grid.add(txtRegistro, 1, 2);
 
         Button btnSalvar = new Button("Salvar");
@@ -55,7 +55,7 @@ public class ProfissionalView extends VBox {
         TableColumn<Profissional, String> colEsp = new TableColumn<>("Especialidade");
         colEsp.setCellValueFactory(new PropertyValueFactory<>("especialidade"));
 
-        TableColumn<Profissional, String> colReg = new TableColumn<>("Registro");
+        TableColumn<Profissional, String> colReg = new TableColumn<>("N° Registro / Documento");
         colReg.setCellValueFactory(new PropertyValueFactory<>("registro"));
 
         tabela.getColumns().addAll(colId, colNome, colEsp, colReg);
