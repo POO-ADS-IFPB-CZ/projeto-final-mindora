@@ -16,7 +16,9 @@ public class AtividadeView extends VBox {
     private TextField txtTitulo = new TextField();
     private TextField txtTipo = new TextField();
     private ComboBox<String> cbNivel = new ComboBox<>();
-    private TextField txtDescricao = new TextField();
+
+    // Alterado de TextField para TextArea (suporta múltiplas linhas e textos longos)
+    private TextArea txtDescricao = new TextArea();
 
     private TableView<Atividade> tabela = new TableView<>();
     private ObservableList<Atividade> listaAtividades = FXCollections.observableArrayList();
@@ -33,6 +35,11 @@ public class AtividadeView extends VBox {
 
         cbNivel.getItems().addAll("basico", "intermediario", "avancado");
 
+        // Configurações do TextArea
+        txtDescricao.setPrefRowCount(3);  // Define altura de 3 linhas visíveis
+        txtDescricao.setWrapText(true);    // Quebra a linha automaticamente
+        txtDescricao.setPrefWidth(300);
+
         grid.add(new Label("Título:"), 0, 0);
         grid.add(txtTitulo, 1, 0);
         grid.add(new Label("Tipo/Categoria:"), 0, 1);
@@ -42,9 +49,8 @@ public class AtividadeView extends VBox {
         grid.add(new Label("Descrição:"), 0, 3);
         grid.add(txtDescricao, 1, 3);
 
-        txtTitulo.setPrefWidth(250);
-        txtTipo.setPrefWidth(250);
-        txtDescricao.setPrefWidth(250);
+        txtTitulo.setPrefWidth(300);
+        txtTipo.setPrefWidth(300);
 
         Button btnSalvar = new Button("Salvar");
         Button btnExcluir = new Button("Excluir");
@@ -66,6 +72,29 @@ public class AtividadeView extends VBox {
 
         TableColumn<Atividade, String> colDesc = new TableColumn<>("Descrição");
         colDesc.setCellValueFactory(new PropertyValueFactory<>("descricao"));
+        colDesc.setPrefWidth(300);
+
+        // Quebra de linha dinâmica dentro das células da própria tabela
+        colDesc.setCellFactory(tc -> {
+            TableCell<Atividade, String> cell = new TableCell<>() {
+                private final Label label = new Label();
+
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setGraphic(null);
+                        setText(null);
+                    } else {
+                        label.setText(item);
+                        label.setWrapText(true);
+                        label.prefWidthProperty().bind(colDesc.widthProperty().subtract(10));
+                        setGraphic(label);
+                    }
+                }
+            };
+            return cell;
+        });
 
         tabela.getColumns().addAll(colId, colTitulo, colTipo, colNivel, colDesc);
         tabela.setItems(listaAtividades);
