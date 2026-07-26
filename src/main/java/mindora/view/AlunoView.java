@@ -18,6 +18,7 @@ public class AlunoView extends VBox {
 
     private TextField txtNome = new TextField();
     private DatePicker dpDataNascimento = new DatePicker();
+    private ComboBox<String> cbNivelSuporte = new ComboBox<>();
     private TextField txtObservacao = new TextField();
     private ComboBox<Responsavel> cbResponsavel = new ComboBox<>();
 
@@ -36,28 +37,33 @@ public class AlunoView extends VBox {
         grid.setHgap(10);
         grid.setVgap(10);
 
+        cbNivelSuporte.getItems().addAll("Nível 1", "Nível 2", "Nível 3");
+        cbNivelSuporte.setPrefWidth(220);
+
         grid.add(new Label("Nome:"), 0, 0);
         grid.add(txtNome, 1, 0);
+
         grid.add(new Label("Data Nascimento:"), 0, 1);
         grid.add(dpDataNascimento, 1, 1);
-        grid.add(new Label("Observação:"), 0, 2);
-        grid.add(txtObservacao, 1, 2);
-        grid.add(new Label("Responsável:"), 0, 3);
 
-        // Botão de atualização rápida ao lado do ComboBox
+        grid.add(new Label("Nível de Suporte:"), 0, 2);
+        grid.add(cbNivelSuporte, 1, 2);
+
+        grid.add(new Label("Observação:"), 0, 3);
+        grid.add(txtObservacao, 1, 3);
+
+        grid.add(new Label("Responsável:"), 0, 4);
+
         Button btnRecarregarResp = new Button("🔄");
         btnRecarregarResp.setTooltip(new Tooltip("Recarregar lista de responsáveis do banco de dados"));
         btnRecarregarResp.setOnAction(e -> carregarResponsaveis());
 
         HBox boxResponsavel = new HBox(5, cbResponsavel, btnRecarregarResp);
-        grid.add(boxResponsavel, 1, 3);
+        grid.add(boxResponsavel, 1, 4);
 
         cbResponsavel.setPrefWidth(220);
-
-        // 🔄 Atualização automática do ComboBox ao abrir a lista suspensa
         cbResponsavel.setOnShowing(e -> carregarResponsaveis());
 
-        // Botões de Ação Principais
         Button btnSalvar = new Button("Salvar");
         Button btnExcluir = new Button("Excluir");
         Button btnLimpar = new Button("Limpar");
@@ -74,13 +80,16 @@ public class AlunoView extends VBox {
         TableColumn<Aluno, LocalDate> colData = new TableColumn<>("Data Nascimento");
         colData.setCellValueFactory(new PropertyValueFactory<>("dataNascimento"));
 
+        TableColumn<Aluno, String> colNivel = new TableColumn<>("Nível Supervisão");
+        colNivel.setCellValueFactory(new PropertyValueFactory<>("nivelSuporte"));
+
         TableColumn<Aluno, String> colObs = new TableColumn<>("Observação");
         colObs.setCellValueFactory(new PropertyValueFactory<>("observacao"));
 
         TableColumn<Aluno, String> colResp = new TableColumn<>("Responsável");
         colResp.setCellValueFactory(new PropertyValueFactory<>("responsavelNome"));
 
-        tabela.getColumns().addAll(colId, colNome, colData, colObs, colResp);
+        tabela.getColumns().addAll(colId, colNome, colData, colNivel, colObs, colResp);
         tabela.setItems(listaAlunos);
 
         getChildren().addAll(new Label("🎓 Gestão de Alunos"), grid, boxBotoes, tabela);
@@ -95,9 +104,9 @@ public class AlunoView extends VBox {
                 alunoSelecionado = novo;
                 txtNome.setText(novo.getNome());
                 dpDataNascimento.setValue(novo.getDataNascimento());
+                cbNivelSuporte.setValue(novo.getNivelSuporte());
                 txtObservacao.setText(novo.getObservacao() != null ? novo.getObservacao() : "");
 
-                // Recarrega responsáveis atualizados do banco ao selecionar um aluno
                 carregarResponsaveis();
 
                 if (novo.getResponsavelId() != null) {
@@ -127,7 +136,6 @@ public class AlunoView extends VBox {
             Responsavel selecionadoAtual = cbResponsavel.getValue();
             cbResponsavel.setItems(FXCollections.observableArrayList(responsavelDAO.listarTodos()));
 
-            // Re-seleciona o responsável anterior se ele ainda existir na lista
             if (selecionadoAtual != null) {
                 for (Responsavel r : cbResponsavel.getItems()) {
                     if (r.getId().equals(selecionadoAtual.getId())) {
@@ -160,11 +168,12 @@ public class AlunoView extends VBox {
 
         try {
             if (alunoSelecionado == null) {
-                Aluno novo = new Aluno(txtNome.getText(), dpDataNascimento.getValue(), txtObservacao.getText());
+                Aluno novo = new Aluno(txtNome.getText(), dpDataNascimento.getValue(), cbNivelSuporte.getValue(), txtObservacao.getText());
                 alunoDAO.salvar(novo, respId);
             } else {
                 alunoSelecionado.setNome(txtNome.getText());
                 alunoSelecionado.setDataNascimento(dpDataNascimento.getValue());
+                alunoSelecionado.setNivelSuporte(cbNivelSuporte.getValue());
                 alunoSelecionado.setObservacao(txtObservacao.getText());
                 alunoDAO.atualizar(alunoSelecionado, respId);
             }
@@ -191,6 +200,7 @@ public class AlunoView extends VBox {
         alunoSelecionado = null;
         txtNome.clear();
         dpDataNascimento.setValue(null);
+        cbNivelSuporte.setValue(null);
         txtObservacao.clear();
         cbResponsavel.setValue(null);
         tabela.getSelectionModel().clearSelection();

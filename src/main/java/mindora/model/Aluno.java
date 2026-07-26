@@ -6,6 +6,7 @@ public class Aluno {
     private Long id;
     private String nome;
     private LocalDate dataNascimento;
+    private String nivelSuporte; 
     private String observacao;
     private Long responsavelId;
     private String responsavelNome;
@@ -13,16 +14,18 @@ public class Aluno {
     public Aluno() {
     }
 
-    public Aluno(String nome, LocalDate dataNascimento, String observacao) {
+    public Aluno(String nome, LocalDate dataNascimento, String nivelSuporte, String observacao) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
+        this.nivelSuporte = nivelSuporte;
         this.observacao = observacao;
     }
 
-    public Aluno(Long id, String nome, LocalDate dataNascimento, String observacao, Long responsavelId, String responsavelNome) {
+    public Aluno(Long id, String nome, LocalDate dataNascimento, String nivelSuporte, String observacao, Long responsavelId, String responsavelNome) {
         this.id = id;
         this.nome = nome;
         this.dataNascimento = dataNascimento;
+        this.nivelSuporte = nivelSuporte;
         this.observacao = observacao;
         this.responsavelId = responsavelId;
         this.responsavelNome = responsavelNome;
@@ -50,6 +53,14 @@ public class Aluno {
 
     public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
+    }
+
+    public String getNivelSuporte() {
+        return nivelSuporte;
+    }
+
+    public void setNivelSuporte(String nivelSuporte) {
+        this.nivelSuporte = nivelSuporte;
     }
 
     public String getObservacao() {
