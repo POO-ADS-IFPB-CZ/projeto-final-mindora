@@ -18,6 +18,3 @@ $RECYCLE.BIN/
 
 # Credenciais do banco local (desenvolvimento)
 src/main/resources/db.properties
-
-#Imagens usadas no Readme
-ImagensReadme/
