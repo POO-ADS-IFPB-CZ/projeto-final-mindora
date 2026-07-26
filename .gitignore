@@ -9,7 +9,12 @@ target/
 # Arquivos temporários do sistema
 .DS_Store
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
 desktop.ini
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
 
 # Credenciais do banco local (desenvolvimento)
 src/main/resources/db.properties
