@@ -56,7 +56,7 @@ public class ProfissionalView extends VBox {
         colEsp.setCellValueFactory(new PropertyValueFactory<>("especialidade"));
 
         TableColumn<Profissional, String> colReg = new TableColumn<>("Registro");
-        colReg.setCellValueFactory(new PropertyValueFactory<>("registroProfissional"));
+        colReg.setCellValueFactory(new PropertyValueFactory<>("registro"));
 
         tabela.getColumns().addAll(colId, colNome, colEsp, colReg);
         tabela.setItems(listaProfissionais);

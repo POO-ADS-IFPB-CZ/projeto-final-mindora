@@ -54,4 +54,9 @@ public class Profissional {
     public void setRegistro(String registro) {
         this.registro = registro;
     }
+    
+    @Override
+    public String toString() {
+        return nome;
+    }
 }
