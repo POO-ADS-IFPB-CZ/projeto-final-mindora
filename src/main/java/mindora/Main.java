@@ -9,6 +9,7 @@ import mindora.view.AlunoView;
 import mindora.view.ProfissionalView;
 import mindora.view.ResponsavelView;
 import mindora.view.AtividadeView;
+import mindora.view.SessaoView;
 import javafx.scene.image.Image;
 import java.io.InputStream;
 
@@ -34,9 +35,13 @@ public class Main extends Application {
         Tab tabAtividades = new Tab("Atividades", new AtividadeView());
         tabAtividades.setClosable(false);
 
-        tabPane.getTabs().addAll(tabAlunos, tabProfissionais, tabResponsaveis, tabAtividades);
+        // Aba 5: Sessões
+        Tab tabSessoes = new Tab("Sessões", new SessaoView());
+        tabSessoes.setClosable(false);
 
-        Scene scene = new Scene(tabPane, 850, 600);
+        tabPane.getTabs().addAll(tabAlunos, tabProfissionais, tabResponsaveis, tabAtividades, tabSessoes);
+
+        Scene scene = new Scene(tabPane, 900, 650);
 
         InputStream iconStream = getClass().getResourceAsStream("/images/LogoMindora64px.jpg");
         if (iconStream != null) {
