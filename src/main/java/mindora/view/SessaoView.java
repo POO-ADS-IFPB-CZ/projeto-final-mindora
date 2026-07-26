@@ -26,7 +26,7 @@ public class SessaoView extends VBox {
     private ComboBox<Aluno> cbAluno = new ComboBox<>();
     private ComboBox<Profissional> cbProfissional = new ComboBox<>();
     private DatePicker dpData = new DatePicker();
-    private TextField txtDuracao = new TextField("50");
+    private TextField txtDuracao = new TextField();
     private ComboBox<String> cbStatus = new ComboBox<>();
     private TextField txtNota = new TextField();
     
@@ -51,7 +51,6 @@ public class SessaoView extends VBox {
         grid.setVgap(10);
 
         cbStatus.getItems().addAll("agendada", "realizada", "cancelada");
-        cbStatus.setValue("agendada");
 
         cbAluno.setPrefWidth(220);
         cbProfissional.setPrefWidth(220);
@@ -172,6 +171,7 @@ public class SessaoView extends VBox {
         });
 
         recarregarTudo();
+        limparCampos();
     }
 
     public void recarregarTudo() {
@@ -255,8 +255,9 @@ public class SessaoView extends VBox {
 
                 sessaoDAO.atualizar(sessaoSelecionada, ativIdsSelecionadas);
             }
-            limparCampos();
             recarregarTudo();
+            limparCampos();
+            mostrarAlerta("Sucesso", "Sessão salva com sucesso!");
         } catch (SQLException e) {
             mostrarAlerta("Erro", "Erro ao salvar sessão: " + e.getMessage());
         }
@@ -277,8 +278,8 @@ public class SessaoView extends VBox {
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
                 sessaoDAO.deletar(sessaoSelecionada.getId());
-                limparCampos();
                 recarregarTudo();
+                limparCampos();
                 mostrarAlerta("Sucesso", "Sessão excluída com sucesso!");
             } catch (SQLException e) {
                 mostrarAlerta("Erro", "Erro ao excluir sessão: " + e.getMessage());
@@ -288,12 +289,19 @@ public class SessaoView extends VBox {
 
     private void limparCampos() {
         sessaoSelecionada = null;
+
+        cbAluno.getSelectionModel().clearSelection();
         cbAluno.setValue(null);
+
+        cbProfissional.getSelectionModel().clearSelection();
         cbProfissional.setValue(null);
+
         dpData.setValue(null);
-        txtDuracao.setText("50");
-        cbStatus.setValue("agendada");
+        txtDuracao.clear();
+        cbStatus.getSelectionModel().clearSelection();
+        cbStatus.setValue(null);
         txtNota.clear();
+
         listAtividades.getSelectionModel().clearSelection();
         tabela.getSelectionModel().clearSelection();
     }
