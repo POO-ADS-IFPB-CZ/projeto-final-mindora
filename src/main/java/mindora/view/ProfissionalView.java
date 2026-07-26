@@ -13,14 +13,13 @@ import java.sql.SQLException;
 
 public class ProfissionalView extends VBox {
 
-    // Componentes do Formulário
     private TextField txtNome = new TextField();
     private TextField txtEspecialidade = new TextField();
     private TextField txtRegistro = new TextField();
 
-    // Tabela e Dados
     private TableView<Profissional> tabela = new TableView<>();
     private ObservableList<Profissional> listaProfissionais = FXCollections.observableArrayList();
+
     private ProfissionalDAO profissionalDAO = new ProfissionalDAO();
     private Profissional profissionalSelecionado = null;
 
@@ -28,16 +27,17 @@ public class ProfissionalView extends VBox {
         setSpacing(10);
         setPadding(new Insets(15));
 
-        // Layout do Formulário (GridPane)
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
 
         grid.add(new Label("Nome:"), 0, 0);
         grid.add(txtNome, 1, 0);
+
         grid.add(new Label("Especialidade:"), 0, 1);
         grid.add(txtEspecialidade, 1, 1);
-        grid.add(new Label("N° Registro Profissional/ Documento:"),0, 2);
+
+        grid.add(new Label("Registro Profissional:"), 0, 2);
         grid.add(txtRegistro, 1, 2);
 
         Button btnSalvar = new Button("Salvar");
@@ -55,20 +55,20 @@ public class ProfissionalView extends VBox {
         TableColumn<Profissional, String> colEsp = new TableColumn<>("Especialidade");
         colEsp.setCellValueFactory(new PropertyValueFactory<>("especialidade"));
 
-        TableColumn<Profissional, String> colReg = new TableColumn<>("N° Registro / Documento");
-        colReg.setCellValueFactory(new PropertyValueFactory<>("registro"));
+        TableColumn<Profissional, String> colReg = new TableColumn<>("Registro");
+        colReg.setCellValueFactory(new PropertyValueFactory<>("registroProfissional"));
 
         tabela.getColumns().addAll(colId, colNome, colEsp, colReg);
         tabela.setItems(listaProfissionais);
 
-        // Adiciona tudo ao VBox principal
-        getChildren().addAll(new Label("👨‍⚕️ Gestão de Profissionais"), grid, boxBotoes, tabela);
+        VBox.setVgrow(tabela, Priority.ALWAYS);
+
+        getChildren().addAll(new Label("🩺 Gestão de Profissionais"), grid, boxBotoes, tabela);
 
         btnSalvar.setOnAction(e -> salvar());
         btnExcluir.setOnAction(e -> excluir());
         btnLimpar.setOnAction(e -> limparCampos());
 
-        // Clique na linha da Tabela para preencher o formulário
         tabela.getSelectionModel().selectedItemProperty().addListener((obs, antigo, novo) -> {
             if (novo != null) {
                 profissionalSelecionado = novo;
@@ -97,11 +97,9 @@ public class ProfissionalView extends VBox {
 
         try {
             if (profissionalSelecionado == null) {
-                // Inserir Novo
                 Profissional novo = new Profissional(txtNome.getText(), txtEspecialidade.getText(), txtRegistro.getText());
                 profissionalDAO.salvar(novo);
             } else {
-                // Atualizar Existente
                 profissionalSelecionado.setNome(txtNome.getText());
                 profissionalSelecionado.setEspecialidade(txtEspecialidade.getText());
                 profissionalSelecionado.setRegistro(txtRegistro.getText());

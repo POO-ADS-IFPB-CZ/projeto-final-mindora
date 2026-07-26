@@ -16,8 +16,6 @@ public class AtividadeView extends VBox {
     private TextField txtTitulo = new TextField();
     private TextField txtTipo = new TextField();
     private ComboBox<String> cbNivel = new ComboBox<>();
-
-    // Alterado de TextField para TextArea (suporta múltiplas linhas e textos longos)
     private TextArea txtDescricao = new TextArea();
 
     private TableView<Atividade> tabela = new TableView<>();
@@ -35,9 +33,8 @@ public class AtividadeView extends VBox {
 
         cbNivel.getItems().addAll("basico", "intermediario", "avancado");
 
-        // Configurações do TextArea
-        txtDescricao.setPrefRowCount(3);  // Define altura de 3 linhas visíveis
-        txtDescricao.setWrapText(true);    // Quebra a linha automaticamente
+        txtDescricao.setPrefRowCount(3);
+        txtDescricao.setWrapText(true);
         txtDescricao.setPrefWidth(300);
 
         grid.add(new Label("Título:"), 0, 0);
@@ -74,7 +71,6 @@ public class AtividadeView extends VBox {
         colDesc.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colDesc.setPrefWidth(300);
 
-        // Quebra de linha dinâmica dentro das células da própria tabela
         colDesc.setCellFactory(tc -> {
             TableCell<Atividade, String> cell = new TableCell<>() {
                 private final Label label = new Label();
@@ -98,6 +94,8 @@ public class AtividadeView extends VBox {
 
         tabela.getColumns().addAll(colId, colTitulo, colTipo, colNivel, colDesc);
         tabela.setItems(listaAtividades);
+        
+        VBox.setVgrow(tabela, Priority.ALWAYS);
 
         getChildren().addAll(new Label("🧩 Gestão de Atividades"), grid, boxBotoes, tabela);
 

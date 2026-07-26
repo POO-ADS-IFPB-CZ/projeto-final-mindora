@@ -58,6 +58,8 @@ public class ResponsavelView extends VBox {
         tabela.getColumns().addAll(colId, colNome, colEmail, colTel);
         tabela.setItems(listaResponsaveis);
 
+        VBox.setVgrow(tabela, Priority.ALWAYS);
+
         getChildren().addAll(new Label("👨‍👩‍👧 Gestão de Responsáveis"), grid, boxBotoes, tabela);
 
         btnSalvar.setOnAction(e -> salvar());

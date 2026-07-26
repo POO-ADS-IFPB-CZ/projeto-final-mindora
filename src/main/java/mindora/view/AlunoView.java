@@ -46,7 +46,7 @@ public class AlunoView extends VBox {
         grid.add(new Label("Data Nascimento:"), 0, 1);
         grid.add(dpDataNascimento, 1, 1);
 
-        grid.add(new Label("Nível de Suporte:"), 0, 2);
+        grid.add(new Label("Nível de Supervisão:"), 0, 2);
         grid.add(cbNivelSuporte, 1, 2);
 
         grid.add(new Label("Observação:"), 0, 3);
@@ -91,6 +91,8 @@ public class AlunoView extends VBox {
 
         tabela.getColumns().addAll(colId, colNome, colData, colNivel, colObs, colResp);
         tabela.setItems(listaAlunos);
+
+        VBox.setVgrow(tabela, Priority.ALWAYS);
 
         getChildren().addAll(new Label("🎓 Gestão de Alunos"), grid, boxBotoes, tabela);
 
