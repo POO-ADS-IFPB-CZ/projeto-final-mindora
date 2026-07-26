@@ -1,0 +1,6 @@
+# Configuração de Exemplo para Conexão PostgreSQL (Mindora)
+db.url=jdbc:postgresql://localhost:5432/mindora
+db.user=postgres
+db.password="senha"
+
+// O arquivo original que armazena a conexão está dentro do .gitignore!
