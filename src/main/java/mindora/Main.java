@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import mindora.view.AlunoView;
 import mindora.view.ProfissionalView;
 import mindora.view.ResponsavelView;
+import mindora.view.AtividadeView;
 import javafx.scene.image.Image;
 import java.io.InputStream;
 
@@ -29,7 +30,11 @@ public class Main extends Application {
         Tab tabResponsaveis = new Tab("Responsáveis", new ResponsavelView());
         tabResponsaveis.setClosable(false);
 
-        tabPane.getTabs().addAll(tabAlunos, tabProfissionais, tabResponsaveis);
+        // Aba 4: Atividades
+        Tab tabAtividades = new Tab("Atividades", new AtividadeView());
+        tabAtividades.setClosable(false);
+
+        tabPane.getTabs().addAll(tabAlunos, tabProfissionais, tabResponsaveis, tabAtividades);
 
         Scene scene = new Scene(tabPane, 850, 600);
 
