@@ -29,7 +29,7 @@ public class SessaoView extends VBox {
     private TextField txtDuracao = new TextField();
     private ComboBox<String> cbStatus = new ComboBox<>();
     private TextField txtNota = new TextField();
-    
+
     private ListView<Atividade> listAtividades = new ListView<>();
 
     private TableView<Sessao> tabela = new TableView<>();
@@ -83,7 +83,7 @@ public class SessaoView extends VBox {
         grid.add(new Label("Status:"), 0, 4);
         grid.add(cbStatus, 1, 4);
 
-        grid.add(new Label("Nota (0 a 10):"), 0, 5);
+        grid.add(new Label("Nota Geral da Sessão (0 a 10):"), 0, 5);
         grid.add(txtNota, 1, 5);
 
         grid.add(new Label("Atividades (Opcional):"), 0, 6);
